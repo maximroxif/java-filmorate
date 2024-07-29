@@ -14,7 +14,7 @@ class UserControllerTest {
     User user;
 
     @BeforeEach
-    void Start() {
+    void start() {
         userController = new UserController();
         user = new User();
         user.setId(1L);

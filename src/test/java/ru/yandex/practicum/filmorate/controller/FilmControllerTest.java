@@ -13,7 +13,7 @@ class FilmControllerTest {
     Film film;
 
     @BeforeEach
-    void Start() {
+    void start() {
         filmController = new FilmController();
         film = new Film();
         film.setId(1L);
@@ -23,7 +23,6 @@ class FilmControllerTest {
         film.setDuration(90L);
     }
 
-    
     @Test
     void createFilm() {
         filmController.createFilm(film);
