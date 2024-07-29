@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,22 +35,28 @@ public class ErrorHandlingControllerAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public String handleException(ConstraintViolationException ex) {
-        return ex.getMessage();
+    public ArrayList<String> handleException(ConstraintViolationException ex) {
+        ArrayList<String> exceptions = new ArrayList<>();
+        exceptions.add(ex.getMessage());
+        return exceptions;
     }
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public String handleNotFound(ValidationException ex) {
-        return ex.getMessage();
+    public ArrayList<String> handleNotFound(ValidationException ex) {
+        ArrayList<String> exceptions = new ArrayList<>();
+        exceptions.add(ex.getMessage());
+        return exceptions;
     }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public String handleNotReadable(HttpMessageNotReadableException ex) {
-        return ex.getMessage();
+    public ArrayList<String> handleNotReadable(HttpMessageNotReadableException ex) {
+        ArrayList<String> exceptions = new ArrayList<>();
+        exceptions.add(ex.getMessage());
+        return exceptions;
     }
 
 }
