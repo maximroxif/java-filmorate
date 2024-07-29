@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = DateValidator.class)
 public @interface DateAnnatation {
 
-    String message() default "Дата не раньше 1985-12-28";
+    String message() default "Дата не раньше 1895-12-28";
 
     Class<?>[] groups() default {};
 
