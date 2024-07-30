@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.controller.Marker;
-import ru.yandex.practicum.filmorate.utils.DateAnnatation;
+import ru.yandex.practicum.filmorate.utils.NotBeforeDate;
 
 import java.time.LocalDate;
 
@@ -24,7 +24,7 @@ public class Film {
     @NotEmpty(groups = Marker.OnCreate.class)
     @Size(max = 200)
     String description;
-    @DateAnnatation
+    @NotBeforeDate
     @NotNull(groups = Marker.OnCreate.class)
     LocalDate releaseDate;
     @NotNull(groups = Marker.OnCreate.class)

@@ -21,7 +21,7 @@ public class ErrorHandlingControllerAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleExc(MethodArgumentNotValidException ex) {
+    public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -35,7 +35,7 @@ public class ErrorHandlingControllerAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ArrayList<String> handleException(ConstraintViolationException ex) {
+    public ArrayList<String> handleConstraintViolationException(ConstraintViolationException ex) {
         ArrayList<String> exceptions = new ArrayList<>();
         exceptions.add(ex.getMessage());
         return exceptions;

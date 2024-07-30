@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDate;
 
-public class DateValidator implements ConstraintValidator<DateAnnatation, LocalDate> {
+public class DateValidator implements ConstraintValidator<NotBeforeDate, LocalDate> {
 
     @Override
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DateValidator.class)
-public @interface DateAnnatation {
+public @interface NotBeforeDate {
 
     String message() default "Дата не раньше 1895-12-28";
 
