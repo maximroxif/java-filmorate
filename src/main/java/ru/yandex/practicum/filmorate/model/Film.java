@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.controller.Marker;
+import ru.yandex.practicum.filmorate.utils.Marker;
 import ru.yandex.practicum.filmorate.utils.NotBeforeDate;
 
 import java.time.LocalDate;

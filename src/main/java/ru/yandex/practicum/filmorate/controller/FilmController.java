@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.utils.Marker;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,8 +63,8 @@ public class FilmController {
             log.info("Отправлен PUT ответ /films {}", newFilm);
             return oldFilm;
         }
-        log.warn("id не найден");
-        throw new ValidationException("id не найден");
+        log.warn("id {} не найден", newFilm.getId());
+        throw new ValidationException("id " + newFilm.getId() + " не найден");
     }
 
     private long getNextId() {

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.controller.Marker;
+import ru.yandex.practicum.filmorate.utils.Marker;
 
 import java.time.LocalDate;
 

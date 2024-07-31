@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.utils;
 
 public interface Marker {
     interface OnCreate {
