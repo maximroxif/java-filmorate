@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
@@ -15,6 +17,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Collection<User> findAll() {
+        log.info("Вернули список всех пользователей");
         return users.values();
     }
 
@@ -22,6 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User createUser(User user) {
         user.setId(getNextId());
         users.put(user.getId(), user);
+        log.info("Создан пользователь {}", user);
         return user;
     }
 
@@ -43,16 +47,21 @@ public class InMemoryUserStorage implements UserStorage {
             if (newUser.getBirthday() != null) {
                 oldUser.setBirthday(newUser.getBirthday());
             }
+            log.info("Обновлен пользователь {}", oldUser);
             return oldUser;
         }
+        log.error("Пользователь с id {} не найден", newUser.getId());
         throw new ValidationException("id " + newUser.getId() + " не найден");
     }
 
     public User getUserById(long id) {
+        log.info("Поступил запрос на поиск пользователя с id {}", id);
         User user = users.get(id);
         if (user == null) {
+            log.error("Пользователь с id {} не найден", id);
             throw new ValidationException("Пользователь с id " + id + " не найден");
         }
+        log.info("Пользователь с id {} успешно найден", id);
         return user;
     }
 

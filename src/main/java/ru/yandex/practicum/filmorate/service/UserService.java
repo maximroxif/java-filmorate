@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -28,45 +27,28 @@ public class UserService {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        User user1 = userStorage.createUser(user);
-        log.info("Создан пользователь {}", user1);
-        return user1;
+        return userStorage.createUser(user);
     }
 
     public User updateUser(User newUser) {
         log.info("Поступил запрос на обновление пользователя {}", newUser);
-        try {
-            return userStorage.updateUser(newUser);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ValidationException("id " + newUser.getId() + " не найден");
-        }
+        return userStorage.updateUser(newUser);
     }
 
     public void addFriend(Long id, Long friendId) {
         log.info("Поступил запрос на добавление пользователя {} в друзья {}", id, friendId);
-        try {
-            User user = userStorage.getUserById(id);
-            User friend = userStorage.getUserById(friendId);
-            user.addFriend(friendId);
-            friend.addFriend(user.getId());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ValidationException(e.getMessage());
-        }
+        User user = userStorage.getUserById(id);
+        User friend = userStorage.getUserById(friendId);
+        user.addFriend(friendId);
+        friend.addFriend(user.getId());
     }
 
     public void removeFriend(Long id, Long friendId) {
         log.info("Поступил запрос на удаление пользователя {} из друзей {}", id, friendId);
-        try {
-            User user = userStorage.getUserById(id);
-            User friend = userStorage.getUserById(friendId);
-            user.removeFriend(friendId);
-            friend.removeFriend(user.getId());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ValidationException(e.getMessage());
-        }
+        User user = userStorage.getUserById(id);
+        User friend = userStorage.getUserById(friendId);
+        user.removeFriend(friendId);
+        friend.removeFriend(user.getId());
     }
 
     public List<User> getFriends(Long id) {
@@ -78,7 +60,7 @@ public class UserService {
 
 
     public List<User> getCommonFriends(Long id, Long otherId) {
-        log.info("Поступил запрос на получение общих друзей пользователя {} с пользователем {}", id,otherId);
+        log.info("Поступил запрос на получение общих друзей пользователя {} с пользователем {}", id, otherId);
         Set<Long> friends = userStorage.getUserById(id).getFriends();
         Set<Long> friends1 = userStorage.getUserById(otherId).getFriends();
         return friends.stream().filter(friends1::contains)
