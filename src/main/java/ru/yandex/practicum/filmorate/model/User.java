@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.utils.Marker;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -29,4 +31,13 @@ public class User {
     @NotNull(groups = Marker.OnCreate.class)
     @PastOrPresent
     LocalDate birthday;
+    Set<Long> friends = new HashSet<>();
+
+    public void addFriend(final Long userId) {
+        friends.add(userId);
+    }
+
+    public void removeFriend(final Long userId) {
+        friends.remove(userId);
+    }
 }

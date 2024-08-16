@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.utils.Marker;
 import ru.yandex.practicum.filmorate.utils.NotBeforeDate;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,4 +32,13 @@ public class Film {
     @NotNull(groups = Marker.OnCreate.class)
     @Positive
     Long duration;
+    Set<Long> likes = new HashSet<>();
+
+    public void addLike(final Long like) {
+        likes.add(like);
+    }
+
+    public void removeLike(final Long like) {
+        likes.remove(like);
+    }
 }
