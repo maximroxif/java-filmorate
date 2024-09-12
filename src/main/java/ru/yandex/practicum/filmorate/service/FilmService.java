@@ -2,88 +2,81 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.GenreRepository;
+import ru.yandex.practicum.filmorate.repository.MpaRatingRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class FilmService {
-    private final FilmRepository filmRepository;
-    private final UserRepository userRepository;
-    private final GenreService genreService;
-    private final MpaRatingService mpaRatingService;
+    private FilmRepository films;
+    private UserRepository users;
+    private MpaRatingRepository mpaRepository;
+    private GenreRepository genreRepository;
 
     public Collection<Film> findAll() {
-        log.info("Поступил запрос на получение списка всех фильмов");
-        return filmRepository.findAll();
+        log.info("Получение списка фильмов");
+        return films.findAll().values().stream().toList();
     }
 
-    public Optional<Film> findById(long id) {
-        return filmRepository.getById(id);
+    public Film getById(long filmID) {
+        log.info("Получение фильма с id = {}", filmID);
+        return films.getById(filmID).orElseThrow(() -> new NotFoundException("Фильм с ID - " + filmID + " не найден"));
     }
 
     public Film createFilm(Film film) {
-        log.info("Поступил запрос на создание фильма {}", film);
-        if(film.getMpa() != null) {
-            if (film.getMpa().getId() > mpaRatingService.findAll().size()) {
-                log.trace("Рейтинг MPA не неайден");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Рейтинг MPA не неайден");
-            }
+        try {
+            mpaRepository.isMpaExists(film.getMpa().getId());
+        } catch (NotFoundException e) {
+            throw new ValidationException("Такого MPA не существует");
         }
-        if (film.getGenres() != null) {
-            for (Genre genre : film.getGenres()) {
-                try {
-                    genreService.findById(genre.getId());
-                } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Жанр не неайден");
-                }
-            }
+        films.createFilm(film);
+        if (film.getId() == null) {
+            throw new InternalServerException("Не удалось сохранить данные");
         }
-        Film createdFilm =  filmRepository.createFilm(film);
-        if (film.getGenres() != null) {
-            for (Genre genre : film.getGenres()) {
-                filmRepository.addGenre(createdFilm.getId(), genre.getId());
-            }
+        try {
+            genreRepository.saveGenre(film);
+        } catch (NotFoundException e) {
+            throw new ValidationException("Такого жанра не существует");
         }
-
-        return createdFilm;
+        log.info("Фильм {} добавлен в список с id = {}", film.getName(), film.getId());
+        return film;
     }
 
-    public Film updateFilm(Film newFilm) {
-        log.info("Поступил запрос на обновление фильма {}", newFilm);
-        filmRepository.getById(newFilm.getId());
-        return filmRepository.updateFilm(newFilm);
-    }
-
-    public void likeFilm(Long filmId, Long userId) {
-        log.info("Поступил запрос на добавление лайка фильму {} от пользователя {}", filmId, userId);
-        Optional<Film> film = filmRepository.getById(filmId);
-        Optional<User> user = userRepository.getUserById(userId);
-        filmRepository.likeFilm(filmId, userId);
-    }
-
-    public void deleteFilmLike(Long filmId, Long userId) {
-        log.info("Поступил запрос на удалеие лайка фильму {} от пользователя {}", filmId, userId);
-        Optional<Film> film = filmRepository.getFilmById(filmId);
-        Optional<User> user = userRepository.getUserById(userId);
-        filmRepository.deleteFilmLike(filmId, userId);
+    public void updateFilm(Film film) {
+        films.isFilmNotExists(film.getId());
+        mpaRepository.isMpaExists(film.getMpa().getId());
+        films.updateFilm(film);
+        genreRepository.saveGenre(film);
+        log.info("Фильм с id = {} обновлен", film.getId());
     }
 
 
-    public List<Film> getPopularFilms(Long count) {
-        log.info("Поступил запрос на получение {} популярного(ых) фильма(ов)", count);
-        return filmRepository.getPopularFilms(count);
+    public void addLike(Long filmID, Long userId) {
+        films.isFilmNotExists(filmID);
+        films.addLike(filmID, userId);
+        log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, filmID);
     }
+
+    public void removeLike(Long filmID, Long userId) {
+        films.isFilmNotExists(filmID);
+        users.isUserNotExists(userId);
+        films.removeLike(filmID, userId);
+        log.info("Пользователь с id = {} удалил лайк фильму id = {}", userId, filmID);
+    }
+
+    public Collection<Film> getPopular(Long count) {
+        log.info("Получение списка {} популярных фильмов", count);
+        return films.getPopular(count).values().stream().toList();
+    }
+
 }
-

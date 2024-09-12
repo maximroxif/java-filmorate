@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.service.MpaRatingService;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/mpa")
@@ -23,7 +22,7 @@ public class MpaRatingController {
     }
 
     @GetMapping("/{id}")
-    public Optional<MpaRating> findById(@PathVariable("id") Long id) {
-        return mpaRatingService.findById(id);
+    public MpaRating findById(@PathVariable("id") int id) {
+        return mpaRatingService.getById(id);
     }
 }

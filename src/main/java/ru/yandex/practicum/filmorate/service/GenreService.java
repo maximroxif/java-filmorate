@@ -1,31 +1,28 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.repository.GenreRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class GenreService {
-    private final GenreRepository repository;
-    public GenreService(final GenreRepository repository) {
-        this.repository = repository;
-    }
+    private final GenreRepository genreRepository;
 
     public Collection<Genre> findAll() {
-        return repository.findAll();
+        log.info("Получение списка жанров");
+        return genreRepository.findAll();
     }
 
-    public Optional<Genre> findById(final Long id) {
-        Optional<Genre> genre = repository.findById(id);
-        if (genre.isPresent()) {
-            return genre;
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Жанр с id " + id + " не найден.");
-        }
+    public Genre getById(int id) {
+        log.info("Получение жанра с id = {}", id);
+        genreRepository.isGenreNotExist(id);
+        return genreRepository.getById(id).orElseThrow(() -> new NotFoundException("Жанр c ID - " + id + " не найден"));
     }
 }

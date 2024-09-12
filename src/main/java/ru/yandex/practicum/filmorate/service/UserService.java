@@ -1,64 +1,72 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Service
-@AllArgsConstructor
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
+    private final UserRepository users;
 
     public Collection<User> findAll() {
-        log.info("Поступил запрос на получение списка всех пользователей");
-        return userRepository.findAll();
+        log.info("Получение списка пользователей");
+        return users.findAll();
     }
 
     public User createUser(User user) {
-        log.info("Поступил запрос на создание пользователя {}", user);
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
+        users.createUser(user);
+        if (user.getId() == null) {
+            throw new InternalServerException("Не удалось сохранить данные");
         }
-        return userRepository.createUser(user);
+        log.info("Пользователь {} создан с id = {}", user.getName(), user.getId());
+        return user;
     }
 
     public User updateUser(User newUser) {
-        log.info("Поступил запрос на обновление пользователя {}", newUser);
-        userRepository.getUserById(newUser.getId());
-        return userRepository.updateUser(newUser);
+        users.isUserNotExists(newUser.getId());
+        users.updateUser(newUser);
+        log.info("Пользователь с id = {} обновлен", newUser.getId());
+        return newUser;
     }
 
-    public void addFriend(Long id, Long friendId) {
-        log.info("Поступил запрос на добавление пользователя {} в друзья {}", id, friendId);
-        Optional<User> user = userRepository.getUserById(id);
-        Optional<User> friend = userRepository.getUserById(friendId);
-        userRepository.addFriend(id, friendId);
+    public void addFriend(Long userID, Long friendID) {
+        users.isUserNotExists(userID);
+        users.isUserNotExists(friendID);
+        users.addToFriends(userID, friendID);
+        log.info("Пользователь с id = {} и пользователь с id = {} теперь друзья", userID, friendID);
     }
 
-    public void removeFriend(Long id, Long friendId) {
-        log.info("Поступил запрос на удаление пользователя {} из друзей {}", id, friendId);
-        Optional<User> user = userRepository.getUserById(id);
-        Optional<User> friend = userRepository.getUserById(friendId);
-        userRepository.removeFriend(id, friendId);
+    public void deleteFriend(Long userID, Long friendID) {
+        users.isUserNotExists(userID);
+        users.isUserNotExists(friendID);
+        users.deleteFromFriends(userID, friendID);
+        log.info("Пользователь с id = {} и пользователь с id = {} больше не друзья", userID, friendID);
     }
 
-    public List<User> getFriends(Long id) {
-        log.info("Поступил запрос на получение друзей пользователя {}", id);
-        Optional<User> userById = userRepository.getUserById(id);
-        return userRepository.getFriends(id);
+    public Collection<User> getFriends(Long userID) {
+        log.info("Поиск друзей пользователя с id = {}", userID);
+        users.isUserNotExists(userID);
+        return users.findAllFriends(userID);
     }
 
+    public Collection<User> getCommonFriends(Long userID, Long anotherUserID) {
+        log.info("Поиск общих друзей пользователя с id = {} и пользователя с id = {}", userID, anotherUserID);
+        users.isUserNotExists(userID);
+        users.isUserNotExists(anotherUserID);
+        return users.findCommonFriends(userID, anotherUserID);
+    }
 
-    public List<User> getCommonFriends(Long id, Long otherId) {
-        return userRepository.getCommonFriends(id, otherId);
+    public User get(Long userID) {
+        log.info("Получение пользователя с id={}", userID);
+        return users.getById(userID).orElseThrow(() -> new NotFoundException(
+                "Пользователь c ID - " + userID + " не найден"));
     }
 }

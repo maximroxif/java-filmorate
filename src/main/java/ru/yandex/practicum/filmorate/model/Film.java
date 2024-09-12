@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,10 +16,9 @@ import ru.yandex.practicum.filmorate.utils.Marker;
 import ru.yandex.practicum.filmorate.utils.NotBeforeDate;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 
+@Builder
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
@@ -26,7 +27,7 @@ public class Film {
     @Null(groups = Marker.OnCreate.class)
     @NotNull(groups = Marker.OnUpdate.class)
     Long id;
-    @NotEmpty(groups = Marker.OnCreate.class)
+    @NotBlank
     String name;
     @NotEmpty(groups = Marker.OnCreate.class)
     @Size(max = 200)
@@ -37,6 +38,7 @@ public class Film {
     @NotNull(groups = Marker.OnCreate.class)
     @Positive
     Long duration;
-    MpaRating mpa;
-    LinkedHashSet<Genre> genres;
+    @NotNull MpaRating mpa;
+    @Builder.Default
+    LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 }

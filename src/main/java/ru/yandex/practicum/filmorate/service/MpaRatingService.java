@@ -1,30 +1,29 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.repository.MpaRatingRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 
+@Slf4j
 @Service
+@AllArgsConstructor
 public class MpaRatingService {
-    private final MpaRatingRepository repository;
-    public MpaRatingService(final MpaRatingRepository repository) {
-        this.repository = repository;
-    }
+    private final MpaRatingRepository mpaRepository;
 
     public Collection<MpaRating> findAll() {
-        return repository.findAll();
+        log.info("Получение списка рейтингов");
+        return mpaRepository.findAll();
     }
 
-    public Optional<MpaRating> findById(final Long id) {
-        Optional<MpaRating> mpaRating = repository.findById(id);
-        if (mpaRating.isPresent()) {
-            return mpaRating;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Рейтинг с id " + id + " не найден.");
+    public MpaRating getById(int id) {
+        log.info("Получение рейтинга с id = {}", id);
+        mpaRepository.isMpaExists(id);
+        return mpaRepository.getById(id).orElseThrow(() -> new NotFoundException(
+                "MPA c ID - " + id + " не найден"));
     }
 }
