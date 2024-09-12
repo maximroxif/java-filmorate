@@ -6,17 +6,22 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.utils.Marker;
 import ru.yandex.practicum.filmorate.utils.NotBeforeDate;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Film {
     @Null(groups = Marker.OnCreate.class)
     @NotNull(groups = Marker.OnUpdate.class)
@@ -32,13 +37,6 @@ public class Film {
     @NotNull(groups = Marker.OnCreate.class)
     @Positive
     Long duration;
-    Set<Long> likes = new HashSet<>();
-
-    public void addLike(final Long like) {
-        likes.add(like);
-    }
-
-    public void removeLike(final Long like) {
-        likes.remove(like);
-    }
+    MpaRating mpa;
+    LinkedHashSet<Genre> genres;
 }

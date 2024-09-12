@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.utils.Marker;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 @RestController
@@ -30,6 +31,11 @@ public class FilmController {
     @GetMapping
     public Collection<Film> findAll() {
         return filmService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Film> findByIid(@PathVariable long id) {
+        return filmService.findById(id);
     }
 
     @PostMapping
