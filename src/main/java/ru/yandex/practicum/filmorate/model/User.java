@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.utils.Marker;
 
@@ -17,6 +19,8 @@ import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Null(groups = Marker.OnCreate.class)
     @NotNull(groups = Marker.OnUpdate.class)
@@ -32,12 +36,4 @@ public class User {
     @PastOrPresent
     LocalDate birthday;
     Set<Long> friends = new HashSet<>();
-
-    public void addFriend(final Long userId) {
-        friends.add(userId);
-    }
-
-    public void removeFriend(final Long userId) {
-        friends.remove(userId);
-    }
 }
